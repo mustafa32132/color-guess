@@ -49,6 +49,7 @@ function App() {
       borderColor += digits[Math.floor(Math.random() * 16)]
     }
     return "#" + borderColor
+    console.log(borderColor)
   }
 
   useEffect(() => {
@@ -81,7 +82,10 @@ function App() {
           <div
             id="guess-me"
             className="w-[200px] h-[200px]"
-            style={{ background: color, border: "8px solid borderColor" }}
+            style={{
+              background: color,
+              border: "6px solid ${borderColor || 'black'}",
+            }}
           ></div>
           <div className="pb-3 mb-3">
             <div className="mb-2 p-2">
