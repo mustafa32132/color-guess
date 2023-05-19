@@ -1,74 +1,68 @@
 import { useEffect, useState } from "react"
 
+const getRandomColorString = () => {
+  const digits = "0123456789ABCDEF"
+  let color = ""
+  for (let i = 0; i < 6; i++) {
+    color += digits[Math.floor(Math.random() * 16)]
+  }
+  return "#" + color
+}
+
+enum Result {
+  Correct,
+  Wrong,
+}
+
 function App() {
   const [color, setColor] = useState("")
   const [borderColor, setBorderColor] = useState("")
   const [answers, setAnswers] = useState<string[]>([])
   const [answersB, setAnswersB] = useState<string[]>([])
-  const [isWrongSelection, setIsWrongSelection] = useState<boolean | undefined>(
+  const [result, setResult] = useState<Result | undefined>(undefined)
+  const [resultBorder, setResultBorder] = useState<Result | undefined>(
     undefined
   )
-  const [isWrongBorderSelection, setIsWrongBorderSelection] = useState<
-    boolean | undefined
-  >(undefined)
 
-  const getRandomColor = () => {
-    const digits = "0123456789ABCDEF"
-    let color = ""
-    for (let i = 0; i < 6; i++) {
-      color += digits[Math.floor(Math.random() * 16)]
-    }
-    return "#" + color
-  }
-
-  useEffect(() => {
-    // Generate random color
-    const actualColor = getRandomColor()
+  function getRandomColor() {
+    const actualColor = getRandomColorString()
+    const actualBorderColor = getRandomColorString()
     setColor(actualColor)
+    setBorderColor(actualBorderColor)
     setAnswers(
-      [actualColor, getRandomColor(), getRandomColor()].sort(
+      [actualColor, getRandomColorString(), getRandomColorString()].sort(
         () => Math.random() - 0.5
       )
     )
+    setAnswersB(
+      [actualBorderColor, getRandomColorString(), getRandomColorString()].sort(
+        () => Math.random() - 0.5
+      )
+    )
+  }
+
+  useEffect(() => {
+    getRandomColor()
   }, [])
 
   function handelAnswerClicked(answer: string) {
     if (answer === color) {
       // guessed correctly
-      setIsWrongSelection(false)
+      setResult(Result.Correct)
     } else {
       // guessed wrong
-      setIsWrongSelection(true)
+      setResult(Result.Wrong)
     }
   }
-
-  const getRandomBorderColor = () => {
-    const digits = "0123456789ABCDEF"
-    let borderColor = ""
-    for (let i = 0; i < 6; i++) {
-      borderColor += digits[Math.floor(Math.random() * 16)]
-    }
-    return "#" + borderColor
-    console.log(borderColor)
-  }
-
-  useEffect(() => {
-    const actualBorderColor = getRandomBorderColor()
-    setBorderColor(actualBorderColor)
-    setAnswersB(
-      [actualBorderColor, getRandomBorderColor(), getRandomBorderColor()].sort(
-        () => Math.random() - 0.5
-      )
-    )
-  }, [])
 
   function handelAnswerBorderClicked(answerB: string) {
     if (answerB === borderColor) {
       // guessed correctly
-      setIsWrongBorderSelection(false)
+      setResultBorder(Result.Correct)
+      getRandomColor()
     } else {
       // guessed wrong
-      setIsWrongBorderSelection(true)
+      setResultBorder(Result.Wrong)
     }
   }
 
@@ -84,7 +78,7 @@ function App() {
             className="w-[200px] h-[200px]"
             style={{
               background: color,
-              border: "6px solid ${borderColor || 'black'}",
+              border: `12px solid ${borderColor || "black"}`,
             }}
           ></div>
           <div className="pb-3 mb-3">
@@ -99,8 +93,11 @@ function App() {
                   {answer}
                 </button>
               ))}
-              {isWrongSelection && (
+              {result === Result.Wrong && (
                 <div className=" text-red-700">Wrong Answer</div>
+              )}
+              {result === Result.Correct && (
+                <div className=" text-green-700">Correct Answer!</div>
               )}
             </div>
             <div className=" p-2">
@@ -114,8 +111,11 @@ function App() {
                   {answerB}
                 </button>
               ))}
-              {isWrongBorderSelection && (
+              {resultBorder === Result.Wrong && (
                 <div className=" text-red-700">Wrong Answer</div>
+              )}
+              {resultBorder === Result.Correct && (
+                <div className=" text-green-700">Correct Answer!</div>
               )}
             </div>
           </div>
